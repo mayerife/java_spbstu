@@ -12,13 +12,6 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-class TaskRequest {
-    private String taskText;
-    private LocalDateTime dueDate;
-}
 
 @RestController
 @RequestMapping("/api/v1/users/{userId}/tasks")
@@ -26,6 +19,14 @@ class TaskRequest {
 public class TaskController {
 
     private final TaskService taskService;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TaskRequest {
+        private String taskText;
+        private LocalDateTime dueDate;
+    }
 
     @GetMapping
     public ResponseEntity<List<Task>> getAllUserTasks(@PathVariable Long userId) {
