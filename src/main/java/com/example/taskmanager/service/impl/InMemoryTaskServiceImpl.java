@@ -1,5 +1,6 @@
 package com.example.taskmanager.service.impl;
 
+import com.example.taskmanager.exceptions.NotFoundException;
 import com.example.taskmanager.model.Task;
 import com.example.taskmanager.service.TaskService;
 import org.springframework.context.annotation.Profile;
@@ -52,11 +53,16 @@ public class InMemoryTaskServiceImpl implements TaskService {
     @Override
     public void softDeleteTask(Long userId, Long taskId) {
         List<Task> userTasks = tasksByUser.get(userId);
-        if (userTasks != null) {
-            userTasks.stream()
-                    .filter(task -> task.getTaskId().equals(taskId))
-                    .findFirst()
-                    .ifPresent(task -> task.setIsDeleted(true));
+        if (userTasks == null) {
+            throw new NotFoundException("No tasks found for user with id " + userId);
         }
+
+        Task task = userTasks.stream()
+                .filter(t -> t.getTaskId().equals(taskId))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(
+                        "Task with id " + taskId + " not found for user " + userId));
+
+        task.setIsDeleted(true);
     }
 }

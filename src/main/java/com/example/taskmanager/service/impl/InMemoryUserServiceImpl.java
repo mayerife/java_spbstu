@@ -1,5 +1,6 @@
 package com.example.taskmanager.service.impl;
 
+import com.example.taskmanager.exceptions.DuplicateResourceException;
 import com.example.taskmanager.model.User;
 import com.example.taskmanager.service.UserService;
 import org.springframework.context.annotation.Profile;
@@ -20,7 +21,7 @@ public class InMemoryUserServiceImpl implements UserService {
     @Override
     public User registerUser(User user) {
         if (usersByUsername.containsKey(user.getUsername())) {
-            throw new IllegalArgumentException("Username already exists");
+            throw new DuplicateResourceException("Username '" + user.getUsername() + "' already exists");
         }
         long newId = idGenerator.getAndIncrement();
         user.setUserId(newId);
