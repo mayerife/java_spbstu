@@ -45,7 +45,7 @@ public class NotificationControllerTest {
                 .notificationId(1L)
                 .userId(42L)
                 .message("Task 1 due soon")
-                .isRead(false)
+                .read(false)
                 .build();
 
         Mockito.when(notificationService.getAllNotificationsByUserId(42L)).thenReturn(List.of(n1));
@@ -63,7 +63,7 @@ public class NotificationControllerTest {
                 .notificationId(2L)
                 .userId(42L)
                 .message("Unread notification")
-                .isRead(false)
+                .read(false)
                 .build();
 
         Mockito.when(notificationService.getPendingNotificationsByUserId(42L)).thenReturn(List.of(n2));

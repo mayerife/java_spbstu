@@ -22,8 +22,8 @@ public class Notification {
     private LocalDateTime creationDate = LocalDateTime.now();
 
     @Builder.Default
-    private boolean isRead = false;
+    private boolean read = false;
 
     @Builder.Default
-    private boolean isDeleted = false;
+    private boolean deleted = false;
 }
