@@ -25,7 +25,7 @@ public class InMemoryTaskServiceImpl implements TaskService {
     public List<Task> getAllTasksByUserId(Long userId) {
         return tasksByUser.getOrDefault(userId, Collections.emptyList())
                 .stream()
-                .filter(task -> !task.getIsDeleted())
+                .filter(task -> !task.getDeleted())
                 .collect(Collectors.toList());
     }
 
@@ -33,7 +33,7 @@ public class InMemoryTaskServiceImpl implements TaskService {
     public List<Task> getPendingTasksByUserId(Long userId) {
         return tasksByUser.getOrDefault(userId, Collections.emptyList())
                 .stream()
-                .filter(task -> !task.getIsDeleted() && !task.getIsComplete())
+                .filter(task -> !task.getDeleted() && !task.getComplete())
                 .collect(Collectors.toList());
     }
 
@@ -42,8 +42,8 @@ public class InMemoryTaskServiceImpl implements TaskService {
         task.setTaskId(idGenerator.getAndIncrement());
         task.setUserId(userId);
         task.setCreationDate(LocalDateTime.now());
-        task.setIsDeleted(false);
-        task.setIsComplete(false);
+        task.setDeleted(false);
+        task.setComplete(false);
 
         tasksByUser.computeIfAbsent(userId, k -> new ArrayList<>()).add(task);
 
@@ -63,6 +63,6 @@ public class InMemoryTaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new NotFoundException(
                         "Task with id " + taskId + " not found for user " + userId));
 
-        task.setIsDeleted(true);
+        task.setDeleted(true);
     }
 }

@@ -19,12 +19,12 @@ public class JpaTaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> getAllTasksByUserId(Long userId) {
-        return taskRepository.findByUserIdAndIsDeletedFalse(userId);
+        return taskRepository.findByUserIdAndDeletedFalse(userId);
     }
 
     @Override
     public List<Task> getPendingTasksByUserId(Long userId) {
-        return taskRepository.findByUserIdAndIsCompleteFalseAndIsDeletedFalse(userId);
+        return taskRepository.findByUserIdAndCompleteFalseAndDeletedFalse(userId);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class JpaTaskServiceImpl implements TaskService {
                 .filter(t -> t.getUserId().equals(userId))
                 .orElseThrow(() -> new NotFoundException("Task not found"));
 
-        task.setIsDeleted(true);
+        task.setDeleted(true);
         taskRepository.save(task);
     }
 }
