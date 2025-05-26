@@ -32,7 +32,6 @@ public class Task {
     private Boolean complete = false;
 
     @Column(nullable = false)
-    @NonNull
     private Long userId;
 
     @Column(nullable = false)

@@ -63,7 +63,7 @@ class TaskControllerTest {
                 .taskId(2L)
                 .userId(42L)
                 .taskText("Pending Task")
-                .isComplete(false)
+                .complete(false)
                 .build();
 
         Mockito.when(taskService.getPendingTasksByUserId(42L)).thenReturn(List.of(task));

@@ -34,8 +34,8 @@ class InMemoryTaskServiceImplTest {
         assertNotNull(createdTask.getTaskId());
         assertEquals("Test task", createdTask.getTaskText());
         assertEquals(userId, createdTask.getUserId());
-        assertFalse(createdTask.getIsDeleted());
-        assertFalse(createdTask.getIsComplete());
+        assertFalse(createdTask.getDeleted());
+        assertFalse(createdTask.getComplete());
 
         List<Task> allTasks = taskService.getAllTasksByUserId(userId);
         assertEquals(1, allTasks.size());
@@ -59,7 +59,7 @@ class InMemoryTaskServiceImplTest {
         Task createdTask1 = taskService.createTaskForUser(userId, task1);
         Task createdTask2 = taskService.createTaskForUser(userId, task2);
 
-        createdTask2.setIsComplete(true);
+        createdTask2.setComplete(true);
 
         List<Task> pendingTasks = taskService.getPendingTasksByUserId(userId);
         assertEquals(1, pendingTasks.size());
