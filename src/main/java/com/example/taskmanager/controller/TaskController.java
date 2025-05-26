@@ -1,48 +1,66 @@
 package com.example.taskmanager.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import com.example.taskmanager.model.Task;
 import com.example.taskmanager.service.TaskService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+class TaskRequest {
+    private String taskText;
+    private LocalDateTime dueDate;
+}
+
 @RestController
-@RequestMapping("/tasks")
+@RequestMapping("/api/v1/users/{userId}/tasks")
+@AllArgsConstructor
 public class TaskController {
 
     private final TaskService taskService;
 
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
+    @GetMapping
+    public ResponseEntity<List<Task>> getAllUserTasks(@PathVariable Long userId) {
+        List<Task> tasks = taskService.getAllTasksByUserId(userId);
+        return ResponseEntity.ok(tasks);
     }
 
-    // GET: Все задачи пользователя
-    @GetMapping("/{userId}")
-    public List<Task> getAllTasks(@PathVariable Long userId) {
-        return taskService.getAllTasksForUser(userId);
+    @GetMapping("/pending")
+    public ResponseEntity<List<Task>> getPendingUserTasks(@PathVariable Long userId) {
+        List<Task> tasks = taskService.getPendingTasksByUserId(userId);
+        return ResponseEntity.ok(tasks);
     }
 
-    // GET: Только незавершённые задачи
-    @GetMapping("/pending/{userId}")
-    public List<Task> getPendingTasks(@PathVariable Long userId) {
-        return taskService.getPendingTasksForUser(userId);
-    }
-
-    // POST: Добавить задачу
     @PostMapping
-    public ResponseEntity<Task> addTask(@RequestBody Task task) {
-        Task created = taskService.addTask(task);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    public ResponseEntity<Task> createTaskForUser(@PathVariable Long userId, @RequestBody TaskRequest taskRequest) {
+        if (taskRequest.getTaskText() == null || taskRequest.getTaskText().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Task taskToCreate = Task.builder()
+                .taskText(taskRequest.getTaskText())
+                .dueDate(taskRequest.getDueDate())
+                .userId(userId)
+                .build();
+
+        Task createdTask = taskService.createTaskForUser(userId, taskToCreate);
+
+        URI location = URI.create(String.format("/api/v1/users/%d/tasks/%d", userId, createdTask.getTaskId()));
+
+        return ResponseEntity.created(location).body(createdTask);
     }
 
-    // DELETE (soft): Пометить как удалённую
     @DeleteMapping("/{taskId}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
-        boolean deleted = taskService.markTaskDeleted(taskId);
-        return deleted
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+    public ResponseEntity<Void> softDeleteTask(@PathVariable Long userId, @PathVariable Long taskId) {
+        taskService.softDeleteTask(userId, taskId);
+        return ResponseEntity.noContent().build();
     }
 }
