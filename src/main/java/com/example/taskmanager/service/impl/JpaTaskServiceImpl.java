@@ -7,33 +7,38 @@ import com.example.taskmanager.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.List;
 
 @Service
-// @Profile("jpa")
 @RequiredArgsConstructor
 public class JpaTaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
 
     @Override
+    @Cacheable(value = "tasks", key = "#userId")
     public List<Task> getAllTasksByUserId(Long userId) {
         return taskRepository.findByUserIdAndDeletedFalse(userId);
     }
 
     @Override
+    @Cacheable(value = "tasks", key = "'pending_' + #userId")
     public List<Task> getPendingTasksByUserId(Long userId) {
         return taskRepository.findByUserIdAndCompleteFalseAndDeletedFalse(userId);
     }
 
     @Override
+    @CacheEvict(value = "tasks", key = "#userId")
     public Task createTaskForUser(Long userId, Task task) {
         task.setUserId(userId);
         return taskRepository.save(task);
     }
 
     @Override
+    @CacheEvict(value = "tasks", key = "#userId")
     public void softDeleteTask(Long userId, Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .filter(t -> t.getUserId().equals(userId))
