@@ -35,6 +35,8 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	implementation 'com.h2database:h2'
 	implementation 'org.projectlombok:lombok'
+	implementation 'org.postgresql:postgresql:42.7.3'
+	implementation 'org.flywaydb:flyway-core'
 }
 
 tasks.named('test') {
