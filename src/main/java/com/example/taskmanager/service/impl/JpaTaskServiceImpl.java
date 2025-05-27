@@ -1,6 +1,8 @@
 package com.example.taskmanager.service.impl;
 
 import com.example.taskmanager.exceptions.NotFoundException;
+import com.example.taskmanager.messaging.TaskCreatedEvent;
+import com.example.taskmanager.messaging.TaskEventPublisher;
 import com.example.taskmanager.model.Task;
 import com.example.taskmanager.repository.TaskRepository;
 import com.example.taskmanager.service.TaskService;
@@ -17,6 +19,7 @@ import java.util.List;
 public class JpaTaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final TaskEventPublisher taskEventPublisher;
 
     @Override
     @Cacheable(value = "tasks", key = "#userId")
@@ -34,7 +37,11 @@ public class JpaTaskServiceImpl implements TaskService {
     @CacheEvict(value = "tasks", key = "#userId")
     public Task createTaskForUser(Long userId, Task task) {
         task.setUserId(userId);
-        return taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
+
+        TaskCreatedEvent event = new TaskCreatedEvent(savedTask.getTaskId(), savedTask.getUserId(), savedTask.getTaskText());
+        taskEventPublisher.publishTaskCreatedEvent(event);
+        return savedTask;
     }
 
     @Override

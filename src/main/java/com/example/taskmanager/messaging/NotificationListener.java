@@ -1,5 +1,6 @@
 package com.example.taskmanager.messaging;
 
+import com.example.taskmanager.config.RabbitMQConfig;
 import com.example.taskmanager.model.Notification;
 import com.example.taskmanager.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +17,11 @@ public class NotificationListener {
 
     private final NotificationRepository notificationRepository;
 
-    @RabbitListener(queues = QUEUE)
+    @RabbitListener(queues = RabbitMQConfig.QUEUE)
     public void handleTaskCreatedEvent(TaskCreatedEvent event) {
         Notification notification = Notification.builder()
                 .userId(event.getUserId())
-                .message("Новая задача: " + event.getTaskText())
+                .message("New task: " + event.getTaskText())
                 .creationDate(LocalDateTime.now())
                 .read(false)
                 .deleted(false)
