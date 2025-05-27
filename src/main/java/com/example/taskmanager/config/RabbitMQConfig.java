@@ -43,7 +43,7 @@ public class RabbitMQConfig {
     @Bean
     public DefaultClassMapper classMapper() {
         DefaultClassMapper classMapper = new DefaultClassMapper();
-        classMapper.setTrustedPackages("com.example.taskmanager.messaging"); // <-- твой пакет
+        classMapper.setTrustedPackages("com.example.taskmanager.messaging");
         return classMapper;
     }
 

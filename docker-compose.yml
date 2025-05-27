@@ -21,8 +21,8 @@ services:
     image: rabbitmq:3-management
     restart: always
     ports:
-      - "5672:5672"     # порт для приложений
-      - "15672:15672"   # web-интерфейс
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
