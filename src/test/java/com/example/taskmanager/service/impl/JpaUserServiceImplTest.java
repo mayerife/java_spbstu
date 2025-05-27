@@ -3,24 +3,25 @@ package com.example.taskmanager.service.impl;
 import com.example.taskmanager.exceptions.DuplicateResourceException;
 import com.example.taskmanager.model.User;
 import com.example.taskmanager.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class JpaUserServiceImplTest {
 
+    @Mock
     private UserRepository userRepository;
-    private JpaUserServiceImpl userService;
 
-    @BeforeEach
-    void setUp() {
-        userRepository = mock(UserRepository.class);
-        userService = new JpaUserServiceImpl(userRepository);
-    }
+    @InjectMocks
+    private JpaUserServiceImpl userService;
 
     @Test
     void registerUser_shouldSaveAndReturnUser_whenUsernameIsUnique() {

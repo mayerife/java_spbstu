@@ -3,29 +3,26 @@ package com.example.taskmanager.service.impl;
 import com.example.taskmanager.exceptions.NotFoundException;
 import com.example.taskmanager.model.Task;
 import com.example.taskmanager.repository.TaskRepository;
-import com.example.taskmanager.service.TaskService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class JpaTaskServiceImplTest {
 
+    @Mock
     private TaskRepository taskRepository;
-    private TaskService taskService;
 
-    @BeforeEach
-    void setUp() {
-        taskRepository = mock(TaskRepository.class);
-        taskService = new JpaTaskServiceImpl(taskRepository);
-    }
+    @InjectMocks
+    private JpaTaskServiceImpl taskService;
 
     @Test
     void getAllTasksByUserId_shouldReturnTasks() {

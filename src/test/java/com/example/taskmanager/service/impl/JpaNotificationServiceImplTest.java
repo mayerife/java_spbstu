@@ -3,8 +3,11 @@ package com.example.taskmanager.service.impl;
 import com.example.taskmanager.exceptions.NotFoundException;
 import com.example.taskmanager.model.Notification;
 import com.example.taskmanager.repository.NotificationRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,16 +15,14 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class JpaNotificationServiceImplTest {
 
+    @Mock
     private NotificationRepository notificationRepository;
-    private JpaNotificationServiceImpl notificationService;
 
-    @BeforeEach
-    void setUp() {
-        notificationRepository = mock(NotificationRepository.class);
-        notificationService = new JpaNotificationServiceImpl(notificationRepository);
-    }
+    @InjectMocks
+    private JpaNotificationServiceImpl notificationService;
 
     @Test
     void getAllNotificationsByUserId_shouldReturnNotifications_whenTheyExist() {
@@ -98,7 +99,7 @@ class JpaNotificationServiceImplTest {
         Notification notif = Notification.builder()
                 .notificationId(1L)
                 .userId(1L)
-                .message("Test message") // <-- добавлено
+                .message("Test message")
                 .read(false)
                 .build();
 
@@ -124,7 +125,7 @@ class JpaNotificationServiceImplTest {
         Notification notif = Notification.builder()
                 .notificationId(1L)
                 .userId(1L)
-                .message("Delete me") // <-- добавлено
+                .message("Delete me")
                 .deleted(false)
                 .build();
 
