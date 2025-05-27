@@ -2,6 +2,7 @@ package com.example.taskmanager.service.impl;
 
 import com.example.taskmanager.exceptions.NotFoundException;
 import com.example.taskmanager.model.Task;
+import com.example.taskmanager.model.TaskStatus;
 import com.example.taskmanager.service.TaskService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -64,5 +65,32 @@ public class InMemoryTaskServiceImpl implements TaskService {
                         "Task with id " + taskId + " not found for user " + userId));
 
         task.setDeleted(true);
+    }
+
+
+    @Override
+    public List<Task> findByStatus(TaskStatus status) {
+        return tasksByUser.values().stream()
+                .flatMap(Collection::stream)
+                .filter(task -> !task.getDeleted() && task.getStatus() == status)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Task updateTask(Long taskId, Task updatedTask) {
+        for (List<Task> userTasks : tasksByUser.values()) {
+            for (int i = 0; i < userTasks.size(); i++) {
+                Task task = userTasks.get(i);
+                if (task.getTaskId().equals(taskId)) {
+                    task.setStatus(updatedTask.getStatus());
+                    task.setComplete(updatedTask.getComplete());
+                    task.setTaskText(updatedTask.getTaskText());
+                    task.setDueDate(updatedTask.getDueDate());
+                    task.setDeleted(updatedTask.getDeleted());
+                    return task;
+                }
+            }
+        }
+        throw new NotFoundException("Task with id " + taskId + " not found");
     }
 }
