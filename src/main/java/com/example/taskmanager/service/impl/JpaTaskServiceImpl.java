@@ -4,6 +4,7 @@ import com.example.taskmanager.exceptions.NotFoundException;
 import com.example.taskmanager.messaging.TaskCreatedEvent;
 import com.example.taskmanager.messaging.TaskEventPublisher;
 import com.example.taskmanager.model.Task;
+import com.example.taskmanager.model.TaskStatus;
 import com.example.taskmanager.repository.TaskRepository;
 import com.example.taskmanager.service.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -53,5 +54,27 @@ public class JpaTaskServiceImpl implements TaskService {
 
         task.setDeleted(true);
         taskRepository.save(task);
+    }
+
+    @Override
+    @Cacheable(value = "tasks", key = "'status_' + #status")
+    public List<Task> findByStatus(TaskStatus status) {
+        return taskRepository.findByStatusAndDeletedFalseOrderByDueDateAsc(status);
+    }
+
+    @Override
+    @CacheEvict(value = "tasks", allEntries = true)
+    public Task updateTask(Long taskId, Task updatedTask) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new NotFoundException("Task not found"));
+
+        if (Boolean.TRUE.equals(task.getDeleted())) {
+            throw new IllegalStateException("Cannot update a deleted task");
+        }
+        task.setStatus(updatedTask.getStatus());
+        task.setComplete(updatedTask.getComplete());
+        task.setTaskText(updatedTask.getTaskText());
+        task.setDueDate(updatedTask.getDueDate());
+        return taskRepository.save(task);
     }
 }
