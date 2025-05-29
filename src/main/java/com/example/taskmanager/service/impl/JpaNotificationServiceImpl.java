@@ -7,17 +7,19 @@ import com.example.taskmanager.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.List;
 
 @Service
-// @Profile("jpa")
 @RequiredArgsConstructor
 public class JpaNotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
 
     @Override
+    @Cacheable(value = "notifications", key = "#userId")
     public List<Notification> getAllNotificationsByUserId(Long userId) {
         List<Notification> notifications = notificationRepository.findByUserIdAndDeletedFalse(userId);
         if (notifications.isEmpty()) {
@@ -27,6 +29,7 @@ public class JpaNotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @Cacheable(value = "notifications", key = "'pending_' + #userId")
     public List<Notification> getPendingNotificationsByUserId(Long userId) {
         List<Notification> notifications = notificationRepository.findByUserIdAndDeletedFalseAndReadFalse(userId);
         if (notifications.isEmpty()) {
@@ -36,6 +39,7 @@ public class JpaNotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @CacheEvict(value = "notifications", key = "#userId")
     public Notification createNotificationForUser(Long userId, String message) {
         Notification notification = Notification.builder()
                 .userId(userId)
@@ -45,6 +49,7 @@ public class JpaNotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @CacheEvict(value = "notifications", key = "#userId")
     public void markNotificationAsRead(Long userId, Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .filter(n -> n.getUserId().equals(userId))
@@ -55,6 +60,7 @@ public class JpaNotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @CacheEvict(value = "notifications", key = "#userId")
     public void softDeleteNotification(Long userId, Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .filter(n -> n.getUserId().equals(userId))

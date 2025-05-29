@@ -7,17 +7,19 @@ import com.example.taskmanager.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.Optional;
 
 @Service
-// @Profile("jpa")
 @RequiredArgsConstructor
 public class JpaUserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
     @Override
+    @CacheEvict(value = "users", key = "#user.username")
     public User registerUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new DuplicateResourceException("Username already exists");
@@ -32,6 +34,7 @@ public class JpaUserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "users", key = "#userId")
     public Optional<User> findById(Long userId) {
         return userRepository.findById(userId);
     }
