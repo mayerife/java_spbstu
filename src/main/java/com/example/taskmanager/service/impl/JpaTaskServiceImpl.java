@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@Profile("jpa")
+// @Profile("jpa")
 @RequiredArgsConstructor
 public class JpaTaskServiceImpl implements TaskService {
 
